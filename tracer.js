@@ -8,12 +8,12 @@ function createTracer (serviceName, options) {
   const reporter = { logSpans: false }
 
   if (options.logger) {
-    config.logger = logger
+    config.logger = options.logger
     reporter.logSpans = true
   }
 
   if (options.agentHost) {
-    reporter.agentHost = agentHost
+    reporter.agentHost = options.agentHost
   }
 
   if (options.agentPort) {
