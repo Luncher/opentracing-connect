@@ -30,7 +30,7 @@ function routerMethodProxy(router, method, tracer) {
     return
   }
 
-  const doit = router[method]
+  const doit = router[method].bind(router)
   router[method] = function (...args) {
     const length = args.length
     if (length <= 1 || typeof args[length-1] !== 'function') {
