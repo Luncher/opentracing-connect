@@ -7,11 +7,11 @@ function routerMethodHandlerProxy(handler, uri, tracer) {
     let req = null
 
     if (args.length === 3) {
-      //express      
+      //express
       req = args[0]
     } else {
       //koa
-      req = ctx.request
+      req = args[0].request
     }
 
     const span = extractOrCreateSpan(req, uri, tracer)
