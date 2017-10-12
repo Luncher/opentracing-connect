@@ -1,5 +1,6 @@
 const Jaeger = require('jaeger-client')
 
+const opentracing = Jaeger.opentracing
 exports.opentracing = Jaeger.opentracing
 
 const createTracer = module.exports.createTracer = 
