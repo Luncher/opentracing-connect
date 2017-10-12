@@ -39,7 +39,7 @@ function routerMethodProxy(router, method, tracer) {
     const uri = args[0]
     const handler = routerMethodHandlerProxy(args[args.length - 1], uri, tracer)
     args.splice(length -1, 1, handler)
-    doit(...args)
+    return doit(...args)
   }
 
   return
