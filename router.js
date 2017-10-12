@@ -15,7 +15,6 @@ function routerMethodHandlerProxy(handler, uri, tracer) {
     }
 
     const span = extractOrCreateSpan(req, uri, tracer)
-    const span = tracer.startSpan(uri)
     span.setTag(opentracing.Tags.HTTP_METHOD, req.method)
     span.setTag(opentracing.Tags.HTTP_URL, req.originalUrl || req.url)
     span.setTag(opentracing.Tags.SPAN_KIND, 'server')
