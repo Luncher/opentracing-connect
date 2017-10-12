@@ -2,7 +2,7 @@ const Jaeger = require('jaeger-client')
 
 exports.opentracing = Jaeger.opentracing
 
-exports.createTracer = 
+const createTracer = module.exports.createTracer = 
 function createTracer (serviceName, options) {
   const config = {}
   const reporter = { logSpans: false }
