@@ -1,0 +1,23 @@
+{
+  "name": "opentracing-connect",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Luncher/opentracing-connect.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Luncher/opentracing-connect/issues"
+  },
+  "homepage": "https://github.com/Luncher/opentracing-connect#readme",
+  "dependencies": {
+    "jaeger-client": "^3.5.3"
+  }
+}
