@@ -50,7 +50,7 @@ function routerProxy(router) {
   const tracer = opentracing.globalTracer()
 
   PROXY_NAMES.forEach(method => {
-    proxyRouterMethod(router, method, tracer)
+    routerMethodProxy(router, method, tracer)
   })
 
   return router
