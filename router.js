@@ -22,8 +22,9 @@ function routerMethodHandlerProxy(handler, uri, tracer) {
     span.setTag(opentracing.Tags.HTTP_METHOD, req.method)
     span.setTag(opentracing.Tags.HTTP_URL, req.originalUrl || req.url)
     span.setTag(opentracing.Tags.SPAN_KIND, 'server')
-    
-    args.push({ span })
+
+    // args.push({ span })
+    args[0].traceCtx = { span, tracer }
 
     function spanFinised () {
       span.finish()
