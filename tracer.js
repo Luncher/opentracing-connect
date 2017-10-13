@@ -4,7 +4,7 @@ const opentracing = Jaeger.opentracing
 exports.opentracing = Jaeger.opentracing
 
 const createTracer = module.exports.createTracer = 
-function createTracer (serviceName, options) {
+function createTracer (serviceName, options = {}) {
   const config = {}
   const reporter = { logSpans: false }
 
