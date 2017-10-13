@@ -1,3 +1,4 @@
+const onFinished = require('on-finished')
 const { opentracing, extractOrCreateSpan } = require('./tracer')
 
 const PROXY_NAMES = ["use", "get", "post", "patch", "put", "delete"]
@@ -5,13 +6,16 @@ const PROXY_NAMES = ["use", "get", "post", "patch", "put", "delete"]
 function routerMethodHandlerProxy(handler, uri, tracer) {
   return function (...args) {
     let req = null
+    let res = null
 
     if (args.length === 3) {
       //express
       req = args[0]
+      res = args[1]
     } else {
       //koa
       req = args[0].request
+      res = args[0].res
     }
 
     const span = extractOrCreateSpan(req, uri, tracer)
@@ -20,6 +24,12 @@ function routerMethodHandlerProxy(handler, uri, tracer) {
     span.setTag(opentracing.Tags.SPAN_KIND, 'server')
     
     args.push({ span })
+
+    function spanFinised () {
+      span.finish()
+    }
+
+    onFinished(res, spanFinised)
 
     return handler(...args)
   }
