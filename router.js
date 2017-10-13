@@ -21,7 +21,7 @@ function routerMethodHandlerProxy(handler, uri, tracer) {
     
     args.push({ span })
 
-    handler(...args)
+    return handler(...args)
   }
 }
 
