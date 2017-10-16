@@ -18,3 +18,59 @@
 
 ## Quick Start
 
+### Integrated With Express 
+
+```javascript
+const express = require('express')
+const { Tracer, RouterProxy } = require('opentracing-connect')
+
+const app = new express()
+
+const serviceName = 'One'
+//create and register global tracer
+Tracer.createGlobalTracer(serviceName, { logger: console })
+//proxy express router
+const Router = RouterProxy.create({ router: { type: "express" }}).routerProxy(express.Router())
+
+Router.get('/one',  async (request, response, next) => {
+  //request has trace prop: traceCtx
+  const result = await doSomething(request.traceCtx.span)
+  console.log('service one result:')
+  console.dir(result)
+  response.json(result)
+})
+
+```
+
+---
+
+### Integrated With Koa2
+
+```javascript
+const Koa = require('koa')
+const KoaRouter = require('koa-router')
+
+const app = new Koa()
+const serviceName = 'Two'
+const tracer = Tracer.createGlobalTracer(serviceName, { logger: console })
+const Router = RouterProxy.create({ router: { type: "koa" }}).routerProxy(KoaRouter())
+
+Router.get('/two', async (ctx, next) => {
+  try {
+    const userIds = [1, 2]
+    //ctx has trace prop: traceCtx    
+    const result = await getUserInfo(userIds, { span: ctx.traceCtx.span })
+    ctx.traceCtx.span.log({'event': 'request_end'})
+    ctx.body = result
+  } catch(err) {
+    console.log(err)
+  }
+
+  return 
+})
+
+```
+
+---
+
+## [MIT License](https://opensource.org/licenses/MIT)
