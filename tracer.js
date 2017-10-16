@@ -1,10 +1,13 @@
 const Jaeger = require('jaeger-client')
-
 const opentracing = Jaeger.opentracing
-exports.opentracing = Jaeger.opentracing
 
-const createTracer = module.exports.createTracer = 
-function createTracer (serviceName, options = {}) {
+function Tracer() {
+
+}
+
+Tracer.opentracing = Jaeger.opentracing
+
+Tracer.createTracer = function(serviceName, options = {}) {
   const config = {}
   const reporter = { logSpans: false }
 
@@ -31,14 +34,14 @@ function createTracer (serviceName, options = {}) {
   }, config)
 }
 
-exports.createGlobalTracer = function (serviceName, options) {
-  const tracer = createTracer(serviceName, options)
+Tracer.createGlobalTracer = function (serviceName, options) {
+  const tracer = Tracer.createTracer(serviceName, options)
   Jaeger.opentracing.initGlobalTracer(tracer)
 
   return tracer
 }
 
-exports.extractOrCreateSpan = function (request, uri, tracer) {
+Tracer.extractOrCreateSpan = function (request, uri, tracer) {
   let span
   
   try {
@@ -50,3 +53,5 @@ exports.extractOrCreateSpan = function (request, uri, tracer) {
 
   return span
 }
+
+module.exports = Tracer
