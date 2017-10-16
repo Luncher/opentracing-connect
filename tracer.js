@@ -39,7 +39,7 @@ exports.createGlobalTracer = function (serviceName, options) {
 }
 
 exports.extractOrCreateSpan = function (request, uri, tracer) {
-  let span = null
+  let span
   
   try {
     const spanContext = tracer.extract(opentracing.FORMAT_HTTP_HEADERS, request.headers)    
