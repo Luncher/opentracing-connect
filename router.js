@@ -3,29 +3,50 @@ const RouterCreator = require('./routers')
 const constants = require('./constants')
 const { opentracing, extractOrCreateSpan } = require('./tracer')
 
+// config = {
+//   router: expressRouter,
+//   proxy: {
+//     type: 'express'
+//   },
+//   customizeTags: function ({ span, tracer}, ...args) {
+
+//   }
+// }
+
 function RouterProxy(router, config) {
-  this.router = router
   this.config = config
+  this.proxyInstance = router  
 }
 
-RouterProxy.create = function (config) {
-  const router = RouterCreator(config)
-  return new RouterProxy(router, config)
+RouterProxy.create = function (config, tracer = null) {
+  if (!config.router) {
+    throw new Error("Not Setup Router")
+  }
+
+  if (!config.proxy) {
+    throw new Error("Not Setup Proxy")    
+  }
+
+  const proxyInstance = RouterCreator(config.proxy)
+  const instance = new RouterProxy(proxyInstance, config)
+  instance.wrap(config.router, tracer)
+
+  return instance
 }
 
-RouterProxy.prototype.routerProxy = function (router, tracer = null) {
+RouterProxy.prototype.wrap = function (router, tracer = null) {
   if (!tracer) {
-    tracer = opentracing.globalTracer()    
+    tracer = opentracing.globalTracer()  
   }
 
   constants.PROXY_NAMES.forEach(method => {
-    this.routerMethodProxy(router, method, tracer)
+    this.wrapRouterMethod(router, method, tracer)
   })
 
   return router
 }
 
-RouterProxy.prototype.routerMethodProxy = function (router, method, tracer) {
+RouterProxy.prototype.wrapRouterMethod = function (router, method, tracer) {
   if (typeof router[method] !== 'function') {
     return
   }
@@ -38,7 +59,7 @@ RouterProxy.prototype.routerMethodProxy = function (router, method, tracer) {
       return doit(...args)
     }
     const uri = args[0]
-    const handler = that.routerMethodHandlerProxy(args[args.length - 1], uri, tracer)
+    const handler = that.wrapRouterMethodHandler(args[args.length - 1], uri, tracer)
     args.splice(length -1, 1, handler)
     return doit(...args)
   }
@@ -46,21 +67,26 @@ RouterProxy.prototype.routerMethodProxy = function (router, method, tracer) {
   return
 }
 
-RouterProxy.prototype.routerMethodHandlerProxy = function (handler, uri, tracer) {
+RouterProxy.prototype.wrapRouterMethodHandler = function (handler, uri, tracer) {
   const that = this
-  
+
   return function (...args) {
-    const req = that.router.request(...args)
-    const res = that.router.response(...args)
-    const url = that.router.url(...args)
-    const method = that.router.method(...args)
+    const req = that.proxyInstance.request(...args)
+    const res = that.proxyInstance.response(...args)
+    const url = that.proxyInstance.url(...args)
+    const method = that.proxyInstance.method(...args)
 
     const span = extractOrCreateSpan(req, uri, tracer)
     span.setTag(opentracing.Tags.HTTP_METHOD, method)
     span.setTag(opentracing.Tags.HTTP_URL, url)
     span.setTag(opentracing.Tags.SPAN_KIND, 'server')
 
-    args[0].traceCtx = { span, tracer }
+    const traceCtx = { span, tracer }
+    if (that.config.customizeTags) {
+      that.config.customizeTags(traceCtx, ...args)
+    }
+
+    args[0].traceCtx = traceCtx
 
     function spanFinised () {
       span.finish()

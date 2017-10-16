@@ -30,7 +30,7 @@ const serviceName = 'One'
 //create and register global tracer
 Tracer.createGlobalTracer(serviceName, { logger: console })
 //proxy express router
-const Router = RouterProxy.create({ router: { type: "express" }}).routerProxy(express.Router())
+const Router = RouterProxy.create({ router: express.Router(), proxy: { type: "express" } })
 
 Router.get('/one',  async (request, response, next) => {
   //request has trace prop: traceCtx
@@ -53,7 +53,7 @@ const KoaRouter = require('koa-router')
 const app = new Koa()
 const serviceName = 'Two'
 const tracer = Tracer.createGlobalTracer(serviceName, { logger: console })
-const Router = RouterProxy.create({ router: { type: "koa" }}).routerProxy(KoaRouter())
+const Router = RouterProxy.create({ router: KoaRouter(), proxy: { type: "koa2" } })
 
 Router.get('/two', async (ctx, next) => {
   try {
@@ -72,5 +72,22 @@ Router.get('/two', async (ctx, next) => {
 ```
 
 ---
+
+### RouterProxy Configure
+
+```javascript
+{
+  //router instance
+  router: expressRouter,
+  //proxy type
+  proxy: {
+    type: 'express'
+  },
+  //add cusmomize tags
+  customizeTags: function ({ span, tracer}, ...args) {
+
+  }
+}
+```
 
 ## [MIT License](https://opensource.org/licenses/MIT)

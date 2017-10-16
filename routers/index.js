@@ -3,9 +3,9 @@ const Koa2Router = require('./koa2_router')
 const constants = require('../constants')
 
 module.exports = function (config) {
-  const type = config.router.type
+  const type = config.type
 
-  let router = config.router
+  let router = config
   if (type === constants.ROUTER_TYPE_EXPRESS) {
     router = new ExpressRouter(config)
   }

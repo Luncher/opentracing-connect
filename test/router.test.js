@@ -9,32 +9,34 @@ describe("Router Test", () => {
   describe("Create Router", () => {
     it("should allow create express routerProxy", () => {
       const config = {
-        router: {
+        router: {},
+        proxy: {
           type: "express"
         }
       }
       const routerProxy = Router.create(config)
-      routerProxy.router.should.be.instanceof(ExpressRouter)
+      routerProxy.proxyInstance.should.be.instanceof(ExpressRouter)
     })
 
     it("should allow create koa2 routerProxy", () => {
       const config = {
-        router: {
+        router: {},
+        proxy: {
           type: "koa2"
         }
       }
       const routerProxy = Router.create(config)
-      routerProxy.router.should.be.instanceof(Koa2Ruoter)
+      routerProxy.proxyInstance.should.be.instanceof(Koa2Ruoter)
     })
   })
 
   it('should allow routerProxy', () => {
     const config = {
-      router: {
+      router: {},      
+      proxy: {
         type: "express"
       }
     }
     const router = Router.create(config)
-    router.routerProxy({})
   })
 })
