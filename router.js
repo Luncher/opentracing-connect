@@ -30,6 +30,7 @@ RouterProxy.prototype.routerMethodProxy = function (router, method, tracer) {
     return
   }
 
+  const that = this
   const doit = router[method].bind(router)
   router[method] = function (...args) {
     const length = args.length
@@ -37,7 +38,7 @@ RouterProxy.prototype.routerMethodProxy = function (router, method, tracer) {
       return doit(...args)
     }
     const uri = args[0]
-    const handler = this.routerMethodHandlerProxy(args[args.length - 1], uri, tracer)
+    const handler = that.routerMethodHandlerProxy(args[args.length - 1], uri, tracer)
     args.splice(length -1, 1, handler)
     return doit(...args)
   }
