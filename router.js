@@ -3,7 +3,6 @@ const RouterCreator = require('./routers')
 const constants = require('./constants')
 const { opentracing, extractOrCreateSpan } = require('./tracer')
 
-
 function RouterProxy(router, config) {
   this.router = router
   this.config = config
@@ -14,8 +13,10 @@ RouterProxy.create = function (config) {
   return new RouterProxy(router, config)
 }
 
-RouterProxy.prototype.routerProxy = function () {
-  const tracer = opentracing.globalTracer()
+RouterProxy.prototype.routerProxy = function (router, tracer = null) {
+  if (!tracer) {
+    tracer = opentracing.globalTracer()    
+  }
 
   constants.PROXY_NAMES.forEach(method => {
     this.routerMethodProxy(router, method, tracer)
