@@ -4,13 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "./node_modules/.bin/mocha test/*.js --timeout 10000 --bail",
+    "cov": "./node_modules/.bin/nyc --reporter=lcovonly npm test"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Luncher/opentracing-connect.git"
   },
-  "keywords": [],
+  "keywords": ["opentracing", "express", "koa", "jaeger"],
   "author": "",
   "license": "ISC",
   "bugs": {
@@ -24,6 +25,7 @@
   "devDependencies": {
     "chai": "^4.1.2",
     "mocha": "^4.0.1",
+    "nyc": "^10.2.0",
     "sinon": "^4.0.1"
   }
 }
